@@ -35,5 +35,7 @@ def register_resources(api: Api):
 def register_blueprints(app: Flask):
 
     from app.cart import checkout_bp
+    from app.home import home_bp
 
     app.register_blueprint(checkout_bp)
+    app.register_blueprint(home_bp)
