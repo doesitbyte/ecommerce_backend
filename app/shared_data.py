@@ -54,6 +54,28 @@ class Cart:
 
         return cartObject
     
+class CouponManager:
+    def __init__(self):
+        """Initialize an empty set to store coupon codes."""
+        self.coupon_codes = {}
+
+    def add_coupon(self, coupon_code, discount_percent):
+        """Add a new coupon code."""
+        self.coupon_codes[coupon_code] = {
+            "discount": discount_percent,
+            "claimed": False
+        }
+
+    def claim_coupon(self, coupon_code):
+        """Claim a coupon code."""
+        try:
+            self.coupon_codes.get(coupon_code)["claimed"] = True
+        except:
+            pass
+
+    def to_dict(self):
+        return self.coupon_codes
+    
 def initialize_datastore():
     cart = Cart()
 
