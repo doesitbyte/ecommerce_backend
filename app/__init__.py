@@ -1,5 +1,8 @@
 """
-This contains the application factory for creating flask application instances.
+Module: app
+
+This module is the entry point for the Flask application. It initializes the Flask
+app object and registers different API resources using Flask-RESTful.
 """
 
 from flask import Flask
@@ -11,9 +14,12 @@ def create_app():
     api = Api(app)
 
     # Register blueprints
-    register_resources(app)
+    register_resources(api)
 
     return app
 
-def register_resources(app):
-    pass
+def register_resources(api):
+
+    from app.cart import CartResource
+
+    api.add_resource(CartResource, '/cart/add', '/cart/remove', '/cart/get')
