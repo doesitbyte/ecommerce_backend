@@ -11,6 +11,10 @@ Classes:
 - PurchaseHistory: Manages and store the history of all checkout out orders.
 """
 
+import json
+
+items = json.load(open("items.json"))
+
 class Cart:
     def __init__(self):
         """Initialize an empty shopping cart."""
@@ -27,3 +31,25 @@ class Cart:
         """Remove items from the shopping cart."""
         if item_id in self.items:
             self.items[item_id] = max(0, self.items[item_id] - quantity)
+
+    def to_dict(self):
+        """Get items from the shopping cart, prices and total."""
+        cartObject = {}
+        itemsData = {}
+        cartTotal = 0
+        for item_id in self.items.keys():
+            itemPrice = items[str(item_id)]
+            itemQuantity = self.items[item_id]
+            itemsData[item_id] = {
+                "quantity": itemQuantity,
+                "priceEach": itemPrice,
+                "priceTotal": itemPrice*itemQuantity,
+            }
+            cartTotal += itemPrice*itemQuantity
+
+        cartObject = {
+            "items": itemsData,
+            "cartTotal": cartTotal
+        }
+
+        return cartObject
