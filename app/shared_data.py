@@ -53,3 +53,10 @@ class Cart:
         }
 
         return cartObject
+    
+def initialize_datastore():
+    cart = Cart()
+
+    return {
+        "cart": cart
+    }

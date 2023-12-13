@@ -7,6 +7,9 @@ app object and registers different API resources using Flask-RESTful.
 
 from flask import Flask
 from flask_restful import Api
+from app.shared_data import Cart, initialize_datastore
+
+datastore = initialize_datastore()
 
 def create_app():
 

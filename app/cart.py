@@ -1,8 +1,8 @@
 from flask_restful import Resource, reqparse
 from flask import jsonify
-from app.shared_data import Cart
+from app import datastore
 
-cart = Cart()
+cart = datastore["cart"]
 
 class CartResource(Resource):
     def __init__(self):
