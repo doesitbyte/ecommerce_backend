@@ -12,6 +12,7 @@ Classes:
 """
 
 import json
+import datetime
 
 items = json.load(open("items.json"))
 
@@ -32,11 +33,15 @@ class Cart:
         if item_id in self.items:
             self.items[item_id] = max(0, self.items[item_id] - quantity)
 
+    def checkout_cart(self):
+        self.items = {}
+
     def to_dict(self):
         """Get items from the shopping cart, prices and total."""
         cartObject = {}
         itemsData = {}
         cartTotal = 0
+        itemsTotalQuantity = 0
         for item_id in self.items.keys():
             itemPrice = items[str(item_id)]
             itemQuantity = self.items[item_id]
@@ -46,10 +51,13 @@ class Cart:
                 "priceTotal": itemPrice*itemQuantity,
             }
             cartTotal += itemPrice*itemQuantity
+            itemsTotalQuantity += itemQuantity
+
 
         cartObject = {
             "items": itemsData,
-            "cartTotal": cartTotal
+            "cartTotal": cartTotal,
+            "itemsTotalQuantity": itemsTotalQuantity
         }
 
         return cartObject
@@ -62,6 +70,7 @@ class CouponManager:
     def add_coupon(self, coupon_code, discount_percent):
         """Add a new coupon code."""
         self.coupon_codes[coupon_code] = {
+            "code": coupon_code,
             "discount": discount_percent,
             "claimed": False
         }
@@ -76,9 +85,48 @@ class CouponManager:
     def to_dict(self):
         return self.coupon_codes
     
+class OrderHistory():
+    def __init__(self):
+        """Initialize items to store in order history."""
+        self.order = []
+        self.totalPurchasedCount = 0
+        self.totalPurchasedAmount = 0
+        self.totalDiscount = 0
+        self.eligibleForCoupon = False
+
+    def checkout_cart(self, cart: dict, coupon):
+        self.order.append(
+            {
+                "cart": cart,
+                "checkoutDate": datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+            }
+        )
+
+        self.totalPurchasedCount += cart.get("itemsTotalQuantity")
+        self.totalPurchasedAmount += (cart.get("cartTotal") - cart.get("cartTotal") * (coupon.get("discount")))
+        if (coupon):
+            self.totalDiscount += cart.get("cartTotal") * (coupon.get("discount"))
+
+        if (len(self.order) % 3 == 0):
+            self.eligibleForCoupon = True
+
+    def isEligibleForCoupon(self):
+        return self.eligibleForCoupon
+
+    def to_dict(self):
+        return {
+            "totalPurchasedCount": self.totalPurchasedCount,
+            "totalPurchasedAmount": self.totalPurchasedAmount,
+            "totalDiscount": self.totalDiscount,
+        }
+    
 def initialize_datastore():
     cart = Cart()
+    coupons = CouponManager()
+    orders = OrderHistory()
 
     return {
-        "cart": cart
+        "cart": cart,
+        "coupons": coupons,
+        "orders": orders,
     }
